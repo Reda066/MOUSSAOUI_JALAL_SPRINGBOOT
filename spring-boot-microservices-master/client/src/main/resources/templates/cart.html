@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.1.3/css/bootstrap.min.css} "/>
+    <title>Title</title>
+</head>
+<body>
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="/">Mini Coin Coin</a>
+    <a href="/cart" class="navbar-right">
+        <button type="button" class="btn btn-primary">Cart : <span th:text="${cartSize}"></span> </button>
+    </a>
+</nav>
+<div class="container mt-3" th:if="${cartSize !=0}">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Produit</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Total</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr th:each="product : ${cart.getProducts()}">
+                <th scope="row" th:text="${product.getProductId()}"></th>
+                <td ><a th:href="@{|/product/${product.getProductId()}|}" th:text="${product.getProduct().getName()}"></a> </td>
+                <td th:text="${product.getProduct().getPrice()}"></td>
+                <td th:text="${product.getQuantity()}"></td>
+
+                <td th:text="${product.getQuantity() * product.getProduct().getPrice()}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="row justify-content-end" >
+        <div class="col-4">
+                <a href="/order" class="btn btn-primary">Order</a>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="webjars/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+</div>
+
+<div class="container mt-2" th:if="${cartSize ==0}">
+    <div class="alert alert-info" role="alert">
+        There is no product in your Cart! <a href="/" class="alert-link">Click here</a> to go back to home page
+    </div>
+
+</div>
+</body>
+</html>
