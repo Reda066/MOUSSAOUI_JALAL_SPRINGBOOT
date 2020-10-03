@@ -39,7 +39,7 @@ public class OrderBean {
     public void calculateTotal() {
         total = 0;
         for (CartItemBean item: products) {
-            total =+ item.getQuantity() * item.getProduct().getPrice();
+            total += item.getQuantity() * item.getProduct().getPrice();
         }
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +36,13 @@ public class ClientController {
     private MsOrderProxy msOrderProxy;
 
     @RequestMapping("/")
-    public String index(Model model, HttpSession httpSession) {
+    public String index(Model model, HttpSession httpSession, @PathParam("order") Integer order) {
         List<ProductBean> products =  msProductProxy.list();
 
         CartBean cart = this.prepareCart(httpSession);
         int cartSize = cart.getProducts() == null ? 0 : cart.getProducts().size();
-
+        System.out.println(order);
+        model.addAttribute("order", order);
         model.addAttribute("products", products);
         model.addAttribute("cartSize", cartSize);
 
@@ -90,9 +92,16 @@ public class ClientController {
     public String cart(Model model, HttpSession httpSession) {
         CartBean cart = this.prepareCart(httpSession);
         int cartSize = cart.getProducts() == null ? 0 : cart.getProducts().size();
+        double total = 0;
+        if(cartSize != 0) {
+            for (CartItemBean item: cart.getProducts()) {
+                total += item.getQuantity() * item.getProduct().getPrice();
+            }
+        }
 
         model.addAttribute("cart", cart);
         model.addAttribute("cartSize", cartSize);
+        model.addAttribute("total", total);
         return "cart";
     }
 
@@ -106,9 +115,14 @@ public class ClientController {
         OrderBean order = new OrderBean();
         order.setProducts(cart.getProducts());
         order.calculateTotal();
-        System.out.println("ORDER :" + msOrderProxy.saveOrder(order).getBody().getId());
-        httpSession.setAttribute("cart", new CartBean());
-        return "redirect:/";
+        if(msOrderProxy.saveOrder(order).getBody() != null){
+            httpSession.setAttribute("cart", new CartBean());
+            return "redirect:/?order=1";
+        }
+        else {
+            return "redirect:/?order=0";
+
+        }
     }
 
     public CartBean prepareCart(HttpSession httpSession) {

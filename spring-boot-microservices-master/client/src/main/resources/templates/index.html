@@ -16,12 +16,19 @@
 
 <div class="container">
 
-
+    <div th:if="${order != null}">
+        <div class="alert alert-danger" role="alert" th:if="${order == 0}">
+            The order did not pass
+        </div>
+        <div class="alert alert-success" role="alert" th:if="${order == 1}">
+            The order has passed
+        </div>
+    </div>
 
     <div class="row">
-        <div th:each="product : ${products}" class="col-md-4 my-1">
+        <div th:each="product : ${products}" class="card col-md-4 my-1">
             <a th:href="@{|/product/${product.id}|}" >
-                <img th:src="${product.illustration}"  class="card-img-top" />
+                <img th:src="${product.illustration}"  class="card-img-top" width="100%"/>
                 <p th:text= "${product.name}"></p>
             </a>
         </div>
